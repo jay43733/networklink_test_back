@@ -1,0 +1,86 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int          @id @default(autoincrement())
+  email      String       @unique
+  password   String
+  Carts      Carts[]
+  OrderItems OrderItems[]
+  Orders     Orders[]
+
+  @@map("user")
+}
+
+model Product {
+  id            Int          @id @default(autoincrement())
+  title         String
+  price         Int
+  category      Category
+  imagePath     String
+  description   String?
+  isRecommended Boolean      @default(false)
+  Carts         Carts[]
+  OrderItems    OrderItems[]
+
+  @@map("product")
+}
+
+enum Category {
+  coffee
+  nonCoffee
+}
+
+model Carts {
+  id        Int       @id @default(autoincrement())
+  amount    Int       @default(1)
+  sweetness Sweetness
+  product   Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  @@map("carts")
+}
+
+model OrderItems {
+  id        Int       @id @default(autoincrement())
+  amount    Int       @default(1)
+  sweetness Sweetness
+  product   Product?  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int?
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  orders    Orders    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+
+  @@map("orderItems")
+}
+
+model Orders {
+  id         Int          @id @default(autoincrement())
+  totalPrice Int
+  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  OrderItems OrderItems[]
+
+  @@map("orders")
+}
+
+enum Sweetness {
+  zeroPercent
+  fiftyPercent
+  hundredPercent
+}
