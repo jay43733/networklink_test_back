@@ -35,7 +35,6 @@ exports.createCart = async (req, res, next) => {
       },
     });
 
-    console.log(`Existing Product :${isProductOrdered}`);
 
     if (isProductOrdered) {
       const updatedAmount = await prisma.carts.update({
@@ -73,7 +72,6 @@ exports.createCart = async (req, res, next) => {
 exports.deleteCart = async (req, res, next) => {
   try {
     const { cartId } = req.params;
-    console.log(`Attempting to delete cart with ID: ${cartId}`);
 
     // Check if the cart item exists
     const cartItem = await prisma.carts.findUnique({

@@ -7,7 +7,6 @@ const secret = process.env.SECRET_KEY;
 module.exports = async (req, res, next) => {
   try {
     const authorization = req.headers.authorization;
-    // console.log(authorization)
     if (!authorization || !authorization.startsWith("Bearer ")) {
       return createError(401, "Unauthorized 1");
     }
@@ -30,9 +29,7 @@ module.exports = async (req, res, next) => {
     }
 
     const { password, ...userData } = foundUser;
-    console.log(userData, "user");
     req.user = userData;
-    // console.log(req.user, ".........")
     next();
   } catch (err) {
     next(err);

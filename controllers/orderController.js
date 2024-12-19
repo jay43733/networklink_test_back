@@ -1,21 +1,34 @@
 const prisma = require("../config/prisma");
 
-exports.getOrderById = async (req, res, next) => {
+exports.getAllOrder = async (req, res, next) => {
   try {
     const { id } = req.user;
     const allOrder = await prisma.orders.findMany({
       where: {
         userId: id,
       },
-      include: {
-        OrderItems: {
-          include: {
-            product: true,
-          },
-        },
-      },
     });
     res.status(200).json(allOrder);
+  } catch (err) {
+    next(err);
+    console.log(err);
+  }
+};
+
+exports.getOrderItemsById = async (req, res, next) => {
+  try {
+    const { id } = req.user;
+    const { orderId } = req.params;
+    const allOrderItems = await prisma.orderItems.findMany({
+      where: {
+        userId: id,
+        orderId: +orderId,
+      },
+      include: {
+        product: true,
+      },
+    });
+    res.status(200).json(allOrderItems);
   } catch (err) {
     next(err);
     console.log(err);
@@ -64,8 +77,6 @@ exports.createOrder = async (req, res, next) => {
         userId: id,
       },
     });
-    console.log(newOrder, "order");
-    console.log(createOrderItems, "orderItem");
     res.status(201).json(newOrder, "order", createOrderItems, "item");
   } catch (err) {
     next(err);
